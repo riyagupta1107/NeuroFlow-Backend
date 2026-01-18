@@ -27,8 +27,11 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # 2. Verify API Key is present
-if not os.getenv("GROQ_API_KEY"):
-    raise ValueError("CRITICAL ERROR: GROQ_API_KEY is missing from .env file or environment variables.")
+def require_groq_key():
+    key = os.getenv("GROQ_API_KEY")
+    if not key:
+        raise HTTPException(status_code=500, detail="GROQ_API_KEY not set")
+    return key
 
 # 3. Define the Model
 # "llama3-8b-8192" is DEPRECATED. 
@@ -175,8 +178,6 @@ agent_app = workflow.compile()
 
 # --- PART 2: FASTAPI SERVER ---
 
-app = FastAPI(title="NeuroFlow Web Agent")
-
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -222,9 +223,3 @@ async def process_url(request: RequestBody):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Entry point for deployment
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    print(f"Starting server on port {port} using model {LLM_MODEL}...")
-    uvicorn.run(app, host="0.0.0.0", port=port)
