@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Literal, TypedDict
 
 # --- Phonetic Correction Models ---
 class CorrectionRequest(BaseModel):
@@ -14,7 +14,6 @@ class CorrectionResponse(BaseModel):
 class TaskRequest(BaseModel):
     energy_level: int = Field(..., ge=1, le=10)
     current_mood: Optional[str] = "neutral"
-    # We pass a simple list of strings as context
     user_context: Optional[List[str]] = ["Study History", "Write Math Paper", "Email Professor", "Clean Desk"]
 
 class TaskResponse(BaseModel):
@@ -26,3 +25,15 @@ class TaskResponse(BaseModel):
 class PanicResponse(BaseModel):
     calming_message: str
     micro_step: str
+
+# --- Scraper Models ---
+class RequestBody(BaseModel):
+    url: str
+    task_type: Literal["summarize", "smart_extract", "simplify"]
+
+class AgentState(TypedDict):
+    url: str
+    task_type: Literal["summarize", "smart_extract", "simplify"] 
+    clean_content: Optional[str]
+    final_output: Optional[str]
+    error: Optional[str]
