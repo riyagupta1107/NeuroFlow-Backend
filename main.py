@@ -8,6 +8,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "message": "NeuroFlow backend is running 🚀"
+    }
+
+
 # LangGraph & LangChain Imports
 from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq
